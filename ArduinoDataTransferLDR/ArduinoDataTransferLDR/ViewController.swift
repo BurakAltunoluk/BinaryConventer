@@ -8,7 +8,9 @@
 import UIKit
 
 class ViewController: UIViewController {
-    
+    var progressBarLimit = Float(0.0)
+    @IBOutlet var progressBar: UIProgressView!
+    @IBOutlet var bitOfNumber: UILabel!
     @IBOutlet var speedLabel: UILabel!
     @IBOutlet var stepper: UIStepper!
     var sayBastan = -1
@@ -25,6 +27,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        stepper.value = 2.0
         dataView.layer.cornerRadius = 5
         dataView.layer.borderWidth = 2
         dataView.layer.borderColor = UIColor.yellow.cgColor
@@ -69,7 +72,7 @@ class ViewController: UIViewController {
         }
         
         outputText.text = allBinaryNumber
-      
+        bitOfNumber.text = "\(allBinaryNumber.count) bits"
     }
     
     // data to binary
@@ -94,10 +97,10 @@ class ViewController: UIViewController {
     func binarySender(data:String,speed:Double){
         
        eachCharcterInData = Array(data)
-    
+        progressBar.progress = 0.0
        dataMiktari = eachCharcterInData.count
-        
-       
+        progressBarLimit =  1 / Float(self.dataMiktari)
+       print(" burada \(progressBarLimit)")
         timer = Timer.scheduledTimer(timeInterval: speed, target: self, selector: #selector(sendBinaryData), userInfo: nil, repeats: true)
         
   }
@@ -105,26 +108,28 @@ class ViewController: UIViewController {
     @objc func sendBinaryData() {
         dataView.backgroundColor = .black
         clockView.backgroundColor = .black
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [self] in
             self.sayBastan += 1
-            
             if self.sayBastan != self.dataMiktari {
                 if self.eachCharcterInData[self.sayBastan] == "1" {
-                    self.dataView.backgroundColor = .green
-                    self.clockView.backgroundColor = .green
+                    self.dataView.backgroundColor = .yellow
+                    self.clockView.backgroundColor = .yellow
             } else {
                 
                 self.dataView.backgroundColor = .black
-                self.clockView.backgroundColor = .green
+                self.clockView.backgroundColor = .yellow
             }
             
             
             } else {
+             
                 self.sayBastan = -1
                 self.timer.invalidate()
+      
             }
+            self.progressBar.progress += progressBarLimit
         }
-     
+  
     }
     
 }
